@@ -1,8 +1,15 @@
 ///<reference types="cypress" />;
 
 describe("Funcionalidade: Login", () => {
-  it("Deve faze login com sucesso", () => {
+  beforeEach(() => {
     cy.visit("http://lojaebac.ebaconline.art.br/minha-conta/");
+  });
+
+  afterEach(() => {
+    cy.screenshot();
+  });
+
+  it("Deve faze login com sucesso", () => {
     cy.get("#username").type("helen.teste@teste.com.br");
     cy.get("#password").type("@teste123");
     cy.get(".woocommerce-form > .button").click();
@@ -10,6 +17,26 @@ describe("Funcionalidade: Login", () => {
     cy.get(".woocommerce-MyAccount-content > :nth-child(2)").should(
       "contain",
       "Olá, helen.teste (não é helen.teste? Sair)"
+    );
+  });
+
+  it("Deve exibir uma mensagem de erro ao insierir usuário inválido", () => {
+    cy.get("#username").type("helen.erro@teste.com.br");
+    cy.get("#password").type("@teste123");
+    cy.get(".woocommerce-form > .button").click();
+
+    // OR cy.get(".woocommerce-error").should("contain","Endereço de e-mail desconhecido.")
+    cy.get(".woocommerce-error").should("exist");
+  });
+
+  it("Deve exibir uma mensagem de erro ao insierir senha inválida", () => {
+    cy.get("#username").type("helen.teste@teste.com.br");
+    cy.get("#password").type("@erro123");
+    cy.get(".woocommerce-form > .button").click();
+
+    cy.get(".woocommerce-error").should(
+      "contain",
+      "Erro: A senha fornecida para o e-mail helen.teste@teste.com.br está incorreta. Perdeu a senha?"
     );
   });
 });
